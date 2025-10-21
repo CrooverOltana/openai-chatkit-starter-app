@@ -1,31 +1,24 @@
-// app/brief/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
 import { ChatKit, useChatKit } from '@openai/chatkit-react';
 
 export default function BriefPage() {
-  // 1) サーバーのセッションAPIから clientToken を取ってくる
-  const [token, setToken] = useState<string | null>(null);
-  useEffect(() => {
-    (async () => {
-      const res = await fetch('/api/create-session', { method: 'POST' });
-      const json = await res.json();
-      setToken(json.clientToken);
-    })();
-  }, []);
+  // 1) useChatKit を「client_secret を取得する関数」で初期化
+  const { control } = useChatKit({
+    api: {
+      async getClientSecret(currentClientSecret?: string) {
+        // 初回 or 期限切れ時はサーバーのセッション作成APIを叩く
+        const res = await fetch('/api/create-session', { method: 'POST' });
+        const { client_secret } = await res.json();
+        return client_secret;
+      },
+    },
+  });
 
-  // 2) token を使って ChatKit を初期化
-  const { control } = useChatKit(
-    token ? { api: { clientToken: token } } : { api: { clientToken: '' } }
-  );
-
-  if (!token) return <div>Loading…</div>;
-
+  // 2) 必要になったらフォーム用のウィジェット連携をここに足せます
   return (
-    <div className="p-6">
-      <h1 className="text-xl mb-4">記事ブリーフ</h1>
-      {/* ここに後でフォーム用のウィジェット連携を追加できます */}
+    <div style={{ padding: 24 }}>
+      <h1 style={{ fontSize: 20, marginBottom: 12 }}>記事ブリーフ</h1>
       <ChatKit control={control} className="h-[700px] w-full" />
     </div>
   );
