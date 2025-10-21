@@ -26,10 +26,20 @@ export default function BriefPage() {
     },
   });
 
-  return (
-    <div style={{ padding: 24 }}>
-      <h1 style={{ fontSize: 20, marginBottom: 12 }}>記事ブリーフ</h1>
-      <ChatKit control={control} className="h-[700px] w-full" />
+return (
+  <div style={{ padding: 24 }}>
+    <h1 style={{ fontSize: 20, marginBottom: 12 }}>記事ブリーフ</h1>
+
+    {/* ChatKitの入れ物に確実な高さを与える */}
+    <div style={{ height: 720, width: '100%', border: '1px solid #eee', borderRadius: 8, overflow: 'hidden' }}>
+      <ChatKit control={control} />
     </div>
-  );
+
+    {/* デバッグ手順メモ（消してOK）:
+       1) DevTools > Network で /api/create-session の結果を確認
+       2) Status が 200 で、JSONに client_secret or clientSecret があるか
+       3) 失敗なら Vercel の環境変数 OPENAI_API_KEY を再確認
+    */}
+  </div>
+);
 }
