@@ -3,19 +3,29 @@
 import { ChatKit, useChatKit } from '@openai/chatkit-react';
 
 export default function BriefPage() {
-  // 1) useChatKit を「client_secret を取得する関数」で初期化
   const { control } = useChatKit({
     api: {
-      async getClientSecret(currentClientSecret?: string) {
-        // 初回 or 期限切れ時はサーバーのセッション作成APIを叩く
-        const res = await fetch('/api/create-session', { method: 'POST' });
-        const { client_secret } = await res.json();
-        return client_secret;
+      // ← 型を公式定義に合わせる（null許容）／必ず string を返す
+      async getClientSecret(currentClientSecret: string | null): Promise<string> {
+        // currentClientSecret は「まだ有効ならそのまま使ってね」というヒント用ですが
+        // スターターでは毎回サーバに新規発行を依頼する実装でOKです。
+        const res = await fetch('/api/create-session', {
+          method: 'POST',
+          // vercel のビルド/キャッシュ環境でも毎回取りにいく
+          cache: 'no-store'
+        });
+        const json = await res.json();
+        // スターターのAPIは通常 { client_secret: string } を返します。
+        // リポジトリによっては clientSecret という camelCase の場合もあるので両対応。
+        const secret = (json.client_secret ?? json.clientSecret) as string | undefined;
+        if (typeof secret !== 'string' || !secret) {
+          throw new Error('create-session API から client_secret が返ってきませんでした。');
+        }
+        return secret;
       },
     },
   });
 
-  // 2) 必要になったらフォーム用のウィジェット連携をここに足せます
   return (
     <div style={{ padding: 24 }}>
       <h1 style={{ fontSize: 20, marginBottom: 12 }}>記事ブリーフ</h1>
