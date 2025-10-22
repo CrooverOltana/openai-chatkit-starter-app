@@ -7,15 +7,15 @@ export const CREATE_SESSION_ENDPOINT = "/api/create-session";
 
 export const STARTER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "What can you do?",
-    prompt: "What can you do?",
+    label: "ヒントを見る",
+    prompt: "ヒントを見る",
     icon: "circle-question",
   },
 ];
 
-export const PLACEHOLDER_INPUT = "Ask anything...";
+export const PLACEHOLDER_INPUT = "ご質問を入力してください";
 
-export const GREETING = "How can I help you today?";
+export const GREETING = "OLTANAサポート";
 
 export const getThemeConfig = (theme: ColorScheme): ThemeOption => ({
   color: {
